@@ -4,9 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gift Card</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="gift-card.css">
 </head>
 <body>
+<div class="download-btn">
+    <span data-toggle="tooltip" data-placement="bottom" title="Download Card">
+        <button class="btn btn-danger" id="downloadBothImages">
+            <i class="fa fa-download" aria-hidden="true"></i>
+        </button>
+    </span>
+</div>
 <div class="flip-card">
     <div class="flip-card-inner">
         <div class="flip-card-front">
@@ -18,4 +27,51 @@
     </div>
 </div>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        // Function to handle download of both images
+        $("#downloadBothImages").click(function() {
+            var zip = new JSZip();
+
+            // Add images to the zip
+            zip.file("image1.png", getBase64Image("images/1.png"), { base64: true });
+            zip.file("image2.png", getBase64Image("images/2.png"), { base64: true });
+
+            // Generate the zip file asynchronously
+            zip.generateAsync({ type: "blob" })
+                .then(function(content) {
+                    // Save the zip file
+                    saveAs(content, "giftCard.zip");
+                    // Show success message
+                    Swal.fire({
+                        icon: "success",
+                        title: "Tải rùi nhé ạ ^^",
+                    });
+                })
+                .catch(function(error) {
+                    // Show error message if any
+                    console.error('Error generating zip file:', error);
+                });
+        });
+
+        // Function to convert image to base64 format
+        function getBase64Image(imgSrc) {
+            var img = new Image();
+            img.src = imgSrc;
+            var canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            var dataURL = canvas.toDataURL("image/png");
+            return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+        }
+    });
+</script>
 </html>
